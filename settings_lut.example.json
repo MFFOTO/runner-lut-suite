@@ -1,0 +1,23 @@
+{
+  "paths": {
+    "input_folder": "D:/EVENT/final_crops",
+    "output_folder": "D:/EVENT/graded",
+    "lut_folder": "luts",
+    "preview_folder": null
+  },
+  "lut": {
+    "selected": null,
+    "strength": 1.0
+  },
+  "output": {
+    "jpeg_quality": 95,
+    "workers": 0,
+    "suffix": "",
+    "preview_max_edge": 640,
+    "sample_count": 4
+  },
+  "options": {
+    "recursive": false,
+    "auto_open_previews": true
+  }
+}

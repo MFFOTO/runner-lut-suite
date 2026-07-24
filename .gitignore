@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+settings_lut.json
+output_lut/
+output/
+graded/
+test_in/
+test_out/
+bench_in/
