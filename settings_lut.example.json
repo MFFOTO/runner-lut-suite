@@ -17,7 +17,7 @@
     "sample_count": 4
   },
   "options": {
-    "recursive": false,
+    "recursive": true,
     "auto_open_previews": true
   }
 }

@@ -48,7 +48,7 @@ DEFAULTS: Dict[str, Any] = {
         "preview_max_edge": 640,
         "sample_count": 4,
     },
-    "options": {"recursive": False, "auto_open_previews": True},
+    "options": {"recursive": True, "auto_open_previews": True},
 }
 
 
@@ -409,7 +409,7 @@ def main() -> None:
         print(f"[ERROR] No .cube files in '{lut_dir}'. Drop your LUTs there and re-run.")
         sys.exit(1)
     # 'recursive' is accepted under paths (where the template shows it) or options.
-    recursive = bool(cfg["paths"].get("recursive", cfg["options"].get("recursive", False)))
+    recursive = bool(cfg["paths"].get("recursive", cfg["options"].get("recursive", True)))
     images = list_images(in_root, recursive)
     if recursive:
         # don't re-ingest our own outputs / preview sheets if they live under the input tree
