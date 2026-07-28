@@ -58,6 +58,25 @@ The two must be the **same framing** (only colour differs — no crop/rotate). I
 prints a fit RMSE so you know how faithfully it captured the edit. Prefer this
 over `make_lut_from_image.py` whenever you have the before/after pair.
 
+## Make a LUT from a Lightroom / XMP edit (Hald CLUT — best for presets)
+The professional way to turn a Lightroom develop look (your XMP edits) into a
+`.cube`. It captures the *entire* pipeline (WB, tone curve, HSL, colour grading,
+calibration) exactly, across the whole colour range — better than either method
+above:
+```
+.\.venv\Scripts\python.exe make_hald.py            # -> hald_identity.png
+```
+1. In **Lightroom**: import `hald_identity.png`, copy the **Develop settings**
+   from an edited photo, and **Paste** them onto the Hald. Turn OFF crop,
+   geometry, sharpening, noise reduction, and vignette — **colour/tone only**.
+2. **Export** it as PNG or TIFF: **sRGB**, **no sharpening**, **no resize**.
+3. Convert it:
+```
+.\.venv\Scripts\python.exe hald_to_cube.py "hald_MyLook.png" luts/MyLook.cube
+```
+Repeat step 1–3 (paste a different look each time) to bank several LUTs. Verified
+round-trip fidelity ~0.6/255.
+
 ## Command-line (optional)
 ```
 python lut_suite.py --input D:/crops --output D:/graded            # interactive
