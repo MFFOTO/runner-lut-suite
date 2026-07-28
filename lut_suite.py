@@ -416,7 +416,23 @@ def main() -> None:
         skip = [out_root.resolve(), prev_dir.resolve()]
         images = [p for p in images if not any(s in p.resolve().parents for s in skip)]
     if not images:
-        print(f"[ERROR] No images in '{in_root}'.")
+        # Self-diagnose: report recursion state, what file types ARE present,
+        # and whether there are unscanned subfolders.
+        try:
+            scan = list(in_root.rglob("*")) if in_root.exists() else []
+        except Exception:
+            scan = []
+        exts = sorted({p.suffix.lower() for p in scan if p.is_file() and p.suffix})
+        subdirs = [p.name for p in in_root.iterdir() if p.is_dir()] if in_root.exists() else []
+        print(f"[ERROR] No supported images in '{in_root}' (recursive={recursive}).")
+        print(f"        Supported: {', '.join(sorted(IMG_EXTS))}")
+        if exts:
+            print(f"        File types found in the tree: {', '.join(exts)}")
+            raw = [e for e in exts if e in (".nef", ".arw", ".cr2", ".cr3", ".raf", ".rw2", ".dng", ".orf")]
+            if raw:
+                print(f"        {', '.join(raw)} are RAW files -- not supported. Export them to JPEG/TIFF first.")
+        if subdirs and not recursive:
+            print(f"        {len(subdirs)} subfolder(s) present but recursive is OFF -- set paths.recursive=true or pass --recursive.")
         sys.exit(1)
     print(f"Found {len(luts)} LUT(s) and {len(images)} image(s)"
           + (" across all subfolders" if recursive else "") + ".")
