@@ -8,7 +8,7 @@ echo   Runner LUT Suite - Setup
 echo ================================================
 echo.
 
-where py >nul 2>&1
+where python >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] Python not found. Install Python 3.10+ first:
     echo         winget install -e --id Python.Python.3.12
@@ -18,7 +18,15 @@ if errorlevel 1 (
 
 if not exist ".venv\Scripts\python.exe" (
     echo Creating virtual environment ...
-    py -3 -m venv .venv || ( echo [ERROR] venv creation failed & pause & exit /b 1 )
+    python -m venv .venv
+    if errorlevel 1 (
+        echo [ERROR] venv creation failed -- usually only the Microsoft Store
+        echo         placeholder is installed. Install real Python
+        echo         ^(winget install -e --id Python.Python.3.12^), disable the
+        echo         Store python aliases, open a new terminal and retry.
+        pause
+        exit /b 1
+    )
 )
 
 set "PYTHONNOUSERSITE=1"

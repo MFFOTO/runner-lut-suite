@@ -32,6 +32,19 @@ Drop any standard Adobe `.cube` file (1D or 3D) into `luts\`. That's it — the
 suite lists whatever it finds. The included `make_sample_luts.py` shows how the
 starters were generated if you want to build your own programmatically.
 
+## Make a LUT from a reference image
+Have a shot whose look you love? Extract a `.cube` from it — the tool analyses
+its white balance, tonal range (lifted/crushed blacks), gamma, saturation, and
+shadow/highlight split-tone and bakes them into a LUT:
+```
+.\.venv\Scripts\python.exe make_lut_from_image.py "D:/hero.jpg"
+.\.venv\Scripts\python.exe make_lut_from_image.py "D:/hero.jpg" luts/MyLook.cube --strength 0.8
+```
+It writes to `luts/<image>.cube` by default, so it shows up in the picker on the
+next `run_lut.bat`. `--strength` (0..1) dials the intensity. Note it extracts a
+consistent *grade*, not a pixel-perfect copy — a flat/hazy source yields a
+flat/hazy LUT, so point it at a shot with the treatment you actually want.
+
 ## Command-line (optional)
 ```
 python lut_suite.py --input D:/crops --output D:/graded            # interactive
