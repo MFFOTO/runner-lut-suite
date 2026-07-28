@@ -377,6 +377,7 @@ def main() -> None:
     ap.add_argument("--lut", help="LUT filename or number to use (skips selection)")
     ap.add_argument("--yes", "-y", action="store_true", help="run the batch without confirmation")
     ap.add_argument("--no-open", action="store_true", help="don't auto-open preview sheets")
+    ap.add_argument("--recursive", action="store_true", help="include images in all subfolders (mirrors the tree to output)")
     ap.add_argument("--workers", type=int)
     args = ap.parse_args()
 
@@ -385,6 +386,8 @@ def main() -> None:
         cfg["paths"]["input_folder"] = args.input
     if args.output:
         cfg["paths"]["output_folder"] = args.output
+    if args.recursive:
+        cfg["paths"]["recursive"] = True
     if args.luts:
         cfg["paths"]["lut_folder"] = args.luts
     if args.workers is not None:
@@ -405,11 +408,18 @@ def main() -> None:
     if not luts:
         print(f"[ERROR] No .cube files in '{lut_dir}'. Drop your LUTs there and re-run.")
         sys.exit(1)
-    images = list_images(in_root, bool(cfg["options"]["recursive"]))
+    # 'recursive' is accepted under paths (where the template shows it) or options.
+    recursive = bool(cfg["paths"].get("recursive", cfg["options"].get("recursive", False)))
+    images = list_images(in_root, recursive)
+    if recursive:
+        # don't re-ingest our own outputs / preview sheets if they live under the input tree
+        skip = [out_root.resolve(), prev_dir.resolve()]
+        images = [p for p in images if not any(s in p.resolve().parents for s in skip)]
     if not images:
         print(f"[ERROR] No images in '{in_root}'.")
         sys.exit(1)
-    print(f"Found {len(luts)} LUT(s) and {len(images)} image(s).")
+    print(f"Found {len(luts)} LUT(s) and {len(images)} image(s)"
+          + (" across all subfolders" if recursive else "") + ".")
 
     # ---- resolve a pre-selected LUT (config or --lut) ----
     chosen_name = args.lut or cfg["lut"]["selected"]
