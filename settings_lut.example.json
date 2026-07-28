@@ -3,7 +3,8 @@
     "input_folder": "D:/EVENT/final_crops",
     "output_folder": "D:/EVENT/graded",
     "lut_folder": "luts",
-    "preview_folder": null
+    "preview_folder": null,
+    "recursive": true
   },
   "lut": {
     "selected": null,
@@ -17,7 +18,6 @@
     "sample_count": 4
   },
   "options": {
-    "recursive": true,
     "auto_open_previews": true
   }
 }
