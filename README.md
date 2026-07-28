@@ -45,6 +45,19 @@ next `run_lut.bat`. `--strength` (0..1) dials the intensity. Note it extracts a
 consistent *grade*, not a pixel-perfect copy — a flat/hazy source yields a
 flat/hazy LUT, so point it at a shot with the treatment you actually want.
 
+## Make a LUT from a before/after pair (most accurate)
+If you have the **same photo un-graded and graded** (e.g. the original export and
+your edited version), this reproduces the *exact* edit — exposure, white balance,
+tone curve, saturation, HSL, split-tone — by fitting the colour transform between
+them. No XMP needed; the grade is already baked into the "after" pixels.
+```
+.\.venv\Scripts\python.exe make_lut_from_pair.py "D:/original.jpg" "D:/graded.jpg"
+.\.venv\Scripts\python.exe make_lut_from_pair.py "D:/original.jpg" "D:/graded.jpg" luts/MyGrade.cube --degree 3
+```
+The two must be the **same framing** (only colour differs — no crop/rotate). It
+prints a fit RMSE so you know how faithfully it captured the edit. Prefer this
+over `make_lut_from_image.py` whenever you have the before/after pair.
+
 ## Command-line (optional)
 ```
 python lut_suite.py --input D:/crops --output D:/graded            # interactive
