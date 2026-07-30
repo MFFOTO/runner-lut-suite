@@ -77,6 +77,16 @@ above:
 Repeat step 1–3 (paste a different look each time) to bank several LUTs. Verified
 round-trip fidelity ~0.6/255.
 
+## Check your LUTs are different
+Confirm two exported `.cube`s really are distinct grades (not the same look
+twice), and see what each does (WB, black lift, contrast, saturation):
+```
+.\.venv\Scripts\python.exe compare_luts.py luts/Look1.cube luts/Look2.cube
+.\.venv\Scripts\python.exe compare_luts.py            # compares every LUT in luts/
+```
+It prints a one-line character for each and a pairwise diff; `IDENTICAL LUTs`
+means two files are the same grade.
+
 ## Command-line (optional)
 ```
 python lut_suite.py --input D:/crops --output D:/graded            # interactive
