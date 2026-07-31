@@ -345,7 +345,11 @@ def run_batch(images, lut, cfg, in_root, out_root):
 #  Helpers
 # --------------------------------------------------------------------------- #
 def list_luts(folder: Path) -> List[Path]:
-    return sorted(p for p in folder.glob("*.cube")) + sorted(p for p in folder.glob("*.CUBE"))
+    # Scan each file once and match the extension case-insensitively. (Globbing
+    # *.cube AND *.CUBE double-counts every file on case-insensitive filesystems
+    # like Windows, where both patterns match the same files.)
+    return sorted((p for p in folder.iterdir() if p.is_file() and p.suffix.lower() == ".cube"),
+                  key=lambda p: p.name.lower())
 
 
 def list_images(folder: Path, recursive: bool) -> List[Path]:
