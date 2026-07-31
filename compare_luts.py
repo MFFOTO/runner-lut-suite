@@ -54,6 +54,8 @@ def grid(lut, n: int = 17) -> np.ndarray:
 
 def main() -> None:
     args = sys.argv[1:]
+    pairwise = "--pairwise" in args
+    args = [a for a in args if a != "--pairwise"]
     paths = [Path(a) for a in args] if args else sorted(Path("luts").glob("*.cube"))
     paths = [p for p in paths if p.exists()]
     if len(paths) < 1:
@@ -74,13 +76,35 @@ def main() -> None:
               f"saturation x{c['sat_x']:.2f}  WB {cast} (R-B {c['wb_R-B']:+.02f})")
     print("=" * 68)
 
-    if len(grids) >= 2:
-        print("Pairwise differences (mean abs, out of 255):")
+    if len(grids) < 2:
+        return
+
+    # Cluster LUTs that are the same grade (mean abs diff < 0.5/255).
+    thr = 0.5
+    groups: list[list[int]] = []
+    for i in range(len(grids)):
+        for grp in groups:
+            if float(np.abs(grids[i] - grids[grp[0]]).mean()) * 255 < thr:
+                grp.append(i)
+                break
+        else:
+            groups.append([i])
+
+    dups = [g for g in groups if len(g) > 1]
+    print(f"{len(grids)} LUT(s) compared -> {len(groups)} unique look(s).")
+    if dups:
+        print("\nIDENTICAL groups (same grade -- keep one of each, the rest are duplicates):")
+        for g in dups:
+            print("   " + "  ==  ".join(names[k] for k in g))
+    else:
+        print("No duplicates -- every LUT is a distinct grade.")
+
+    if pairwise:
+        print("\nFull pairwise (mean abs /255):")
         for i in range(len(grids)):
             for j in range(i + 1, len(grids)):
                 d = float(np.abs(grids[i] - grids[j]).mean()) * 255
-                verdict = "IDENTICAL LUTs" if d < 0.5 else "different"
-                print(f"   {names[i]}  vs  {names[j]}:  {d:.1f}/255  -> {verdict}")
+                print(f"   {names[i]}  vs  {names[j]}:  {d:.1f}" + ("  IDENTICAL" if d < thr else ""))
 
 
 if __name__ == "__main__":

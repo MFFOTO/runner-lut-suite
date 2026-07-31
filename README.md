@@ -84,8 +84,9 @@ twice), and see what each does (WB, black lift, contrast, saturation):
 .\.venv\Scripts\python.exe compare_luts.py luts/Look1.cube luts/Look2.cube
 .\.venv\Scripts\python.exe compare_luts.py            # compares every LUT in luts/
 ```
-It prints a one-line character for each and a pairwise diff; `IDENTICAL LUTs`
-means two files are the same grade.
+It prints a one-line character for each, then **groups any identical LUTs
+together** and reports how many unique looks you have (add `--pairwise` for the
+full matrix). Great for de-duping a batch of exports.
 
 ## Command-line (optional)
 ```
