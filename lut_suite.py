@@ -290,12 +290,16 @@ def _init_worker(lut, strength, quality, in_root, out_root, suffix):
 
 
 def _process_one(in_path_str: str):
-    from PIL import Image
+    from PIL import Image, ImageOps
     in_path = Path(in_path_str)
     try:
         img = Image.open(in_path)
-        exif = img.info.get("exif")
         icc = img.info.get("icc_profile")
+        # Bake the EXIF orientation into the pixels so the output displays the
+        # right way up everywhere (exif_transpose also drops the now-applied
+        # orientation tag, so it isn't rotated a second time by EXIF-aware apps).
+        img = ImageOps.exif_transpose(img)
+        exif = img.info.get("exif")
         graded = apply_dense(np.asarray(img.convert("RGB")), _W["dense"])
         rel = in_path.relative_to(_W["in_root"])
         out_path = _W["out_root"] / rel.parent / (rel.stem + _W["suffix"] + in_path.suffix)
@@ -358,14 +362,14 @@ def list_images(folder: Path, recursive: bool) -> List[Path]:
 
 
 def pick_samples(images: List[Path], k: int):
-    from PIL import Image
+    from PIL import Image, ImageOps
     if not images:
         return []
     idx = np.linspace(0, len(images) - 1, min(k, len(images))).round().astype(int)
     out = []
     for i in sorted(set(idx.tolist())):
         try:
-            out.append(Image.open(images[i]).convert("RGB"))
+            out.append(ImageOps.exif_transpose(Image.open(images[i])).convert("RGB"))
         except Exception:
             pass
     return out
